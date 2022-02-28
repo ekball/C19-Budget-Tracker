@@ -4,6 +4,8 @@
     "description": "An app to track your spending habits.",
     "background_color": "#358FCE",
     "theme_color": "#3C414E",
+    "start_url": "/",
+    "display": "standalone",
     "icons": [
         {
             "src": "/icons/icon-72x72.png",

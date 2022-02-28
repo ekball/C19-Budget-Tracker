@@ -38,7 +38,7 @@ request.onerror = function (event) {
 function saveRecord(record) {
 
     // open a new transaction with the database with read and write permissions
-    const transaction = db.transaction(['new_request'], 'readWrite');
+    const transaction = db.transaction(['new_request'], 'readwrite');
 
     // access the object store
     const objectStoreOfRequest = transaction.objectStore('new_request');
@@ -63,19 +63,19 @@ function uploadRequest() {
 
         // if object store had data, send to api server
         if (getAll.result.length > 0) {
-            fetch('/api/transaction', {
-                method: 'POST',
+            fetch("/api/transaction", {
+                method: "POST",
                 body: JSON.stringify(getAll.result),
                 headers: {
-                    Accept: 'application/json, text/plain, */*',
-                    'Content-Type': 'application/json'
+                  Accept: "application/json, text/plain, */*",
+                  "Content-Type": "application/json"
                 }
             })
             .then(response => response.json())
-            .then(serverResponse => {
-                if(serverResponse.message) {
-                    throw new Error(serverResponse);
-                }
+            .then(server => {
+                    if (server.message) {
+                        throw new Error(server);
+                    }
 
                 // open new transaction
                 const transaction = db.transaction(['new_request'], 'readwrite');
@@ -86,7 +86,7 @@ function uploadRequest() {
                 // clear everything in object store
                 objectStoreOfRequest.clear();
 
-                alert('Your transactions been completed!');
+                alert('Your transactions have been completed!');
             })
             .catch(err => {
                 console.log(err);
