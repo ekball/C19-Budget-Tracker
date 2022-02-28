@@ -23,12 +23,13 @@ request.onsuccess = function(event) {
 
     // check if app has internet connection
     if (navigator.onLine) {
-        // sendRequest();
+        sendRequest();
     }
 };
 
 // if there is an error
 request.onerror = function (event) {
+
     // log the error in console
     console.log(event.target.errorCode);
 }
@@ -46,3 +47,54 @@ function saveRecord(record) {
     objectStoreOfRequest.add(record);
 };
 
+function uploadRequest() {
+
+    // open transaction
+    const transaction = db.transaction(['new_request'], 'readwrite');
+
+    // access your object store
+    const objectStoreOfRequest = transaction.objectStore('new_request');
+
+    // get all records from object store and put in variable
+    const getAllRecords = objectStoreOfRequest.getAllRecords();
+
+};
+
+// if .getAllRecords was successful
+getAllRecords.onsuccess = function() {
+
+    // if object store had data, send to api server
+    if (getAllRecords.result.length > 0) {
+        fetch('/api/pizzas', {
+            method: 'POST',
+            body: JSON.stringify(getAllRecords.result),
+            headers: {
+                Accept: 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(serverResponse => {
+            if(serverResponse.message) {
+                throw new Error(serverResponse);
+            }
+
+            // open new transaction
+            const transaction = db.transaction(['new_request'], 'readwrite');
+
+            // access object store
+            const objectStoreOfRequest = transaction.objectStore('new_request');
+
+            // clear everything in object store
+            objectStoreOfRequest.clear();
+
+            alert('Your transactions been completed!');
+        })
+        .catch(err => {
+            console.log(err);
+        })
+    }
+}
+
+// check for internet connectivity to re-establish connection
+window.addEventListener('online', uploadRequest);
