@@ -86,7 +86,7 @@ function uploadRequest() {
                 // clear everything in object store
                 objectStoreOfRequest.clear();
 
-                alert('Your transactions have been completed!');
+                alert('Any transactions made while offline have been processed!');
             })
             .catch(err => {
                 console.log(err);
