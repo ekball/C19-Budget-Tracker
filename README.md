@@ -12,7 +12,7 @@
 
     The repository link: https://github.com/ekball/C19-Budget-Tracker
 
-    The deployed site: 
+    The deployed site: https://warm-woodland-59583.herokuapp.com/
 
 ## Demo Social Network
 
