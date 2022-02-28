@@ -23,7 +23,7 @@ request.onsuccess = function(event) {
 
     // check if app has internet connection
     if (navigator.onLine) {
-        sendRequest();
+        uploadRequest();
     }
 };
 
@@ -56,43 +56,42 @@ function uploadRequest() {
     const objectStoreOfRequest = transaction.objectStore('new_request');
 
     // get all records from object store and put in variable
-    const getAllRecords = objectStoreOfRequest.getAllRecords();
+    const getAll = objectStoreOfRequest.getAll();
 
-};
+    // if .getAll was successful
+    getAll.onsuccess = function() {
 
-// if .getAllRecords was successful
-getAllRecords.onsuccess = function() {
+        // if object store had data, send to api server
+        if (getAll.result.length > 0) {
+            fetch('/api/transaction', {
+                method: 'POST',
+                body: JSON.stringify(getAll.result),
+                headers: {
+                    Accept: 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(serverResponse => {
+                if(serverResponse.message) {
+                    throw new Error(serverResponse);
+                }
 
-    // if object store had data, send to api server
-    if (getAllRecords.result.length > 0) {
-        fetch('/api/pizzas', {
-            method: 'POST',
-            body: JSON.stringify(getAllRecords.result),
-            headers: {
-                Accept: 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(serverResponse => {
-            if(serverResponse.message) {
-                throw new Error(serverResponse);
-            }
+                // open new transaction
+                const transaction = db.transaction(['new_request'], 'readwrite');
 
-            // open new transaction
-            const transaction = db.transaction(['new_request'], 'readwrite');
+                // access object store
+                const objectStoreOfRequest = transaction.objectStore('new_request');
 
-            // access object store
-            const objectStoreOfRequest = transaction.objectStore('new_request');
+                // clear everything in object store
+                objectStoreOfRequest.clear();
 
-            // clear everything in object store
-            objectStoreOfRequest.clear();
-
-            alert('Your transactions been completed!');
-        })
-        .catch(err => {
-            console.log(err);
-        })
+                alert('Your transactions been completed!');
+            })
+            .catch(err => {
+                console.log(err);
+            })
+        }
     }
 }
 

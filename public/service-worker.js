@@ -1,6 +1,5 @@
-const APP = 'Budget_Tracker-';
-const VERSION = 'v.1';
-const CACHE_NAME = APP + VERSION;
+const CACHE_NAME = 'budget-tracker-v.1';
+const DATA_CACHE = 'bt-cache-v.1';
 
 const FILES_TO_CACHE = [
     '/', 
@@ -51,7 +50,7 @@ self.addEventListener('activate', function(evt) {
 self.addEventListener('fetch', function(evt) {
     if (evt.request.url.includes('/api/')) {
         evt.respondWith(
-            caches.open(DATA_CACHE_NAME)
+            caches.open(DATA_CACHE)
             .then(cache => {
                 return;
                 fetch(evt.request)
